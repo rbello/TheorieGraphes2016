@@ -89,7 +89,8 @@ public class Main {
 					// Ce voisin de voisin a déjà été rencontré !
 					if (ss.contains(s3)) {
 						Rencontre r = new Rencontre(s1, s3);
-						// On ne fait plus ce test : cela augmente la suspicion
+						// On ne fait plus ce test : le fait de conserver les redondances permet
+						// d'augmenter la suspicion
 						//if (rs.contains(r)) continue;
 						rs.add(r);
 						System.out.println(" - " + s1 + " et " + s3 + " ne se sont pas rencontreés, alors que " + s2 + " les a vu tt les deux");
