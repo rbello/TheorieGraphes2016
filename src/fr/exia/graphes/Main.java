@@ -6,9 +6,7 @@ import java.awt.Paint;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -68,7 +66,7 @@ public class Main {
 		detecterAnomalies(G);
 		
 		// On affiche le graph
-		displayGraph("Original", G, new Dimension(750, 550));
+		displayGraph("Original", G, new Dimension(680, 550));
 		
 	}
 	
@@ -178,6 +176,7 @@ public class Main {
 				jf.getContentPane().add(vv);
 				jf.pack();
 				jf.setTitle(title);
+				jf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				jf.setVisible(true);
 			}
 		});
