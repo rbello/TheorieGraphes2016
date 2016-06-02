@@ -4,11 +4,27 @@ import java.awt.geom.Point2D;
 
 public class Suspect {
 	
-	private String name;
-	private Point2D loc;
+	private static int INDEX = 0;
+	
+	/**
+	 * Numéro d'index du sommet dans le graphe.
+	 */
 	private int index;
 	
-	private static int INDEX = 0;
+	/**
+	 * Nom du suspect.
+	 */
+	private String name;
+	
+	/**
+	 * Emplacement graphique dans la fenêtre.
+	 */
+	private Point2D loc;
+	
+	/**
+	 * Niveau de suspicion, croissant quand des incertitudes apparaissent.
+	 */
+	private int suspicion;
 	
 	public Suspect(String name, double x, double y) {
 		this.index = INDEX++;
@@ -26,6 +42,14 @@ public class Suspect {
 	
 	public Point2D getLocation() {
 		return this.loc;
+	}
+	
+	public int getSuspicionLevel() {
+		return this.suspicion;
+	}
+	
+	public void addSuspicion() {
+		this.suspicion += 1;
 	}
 	
 	@Override

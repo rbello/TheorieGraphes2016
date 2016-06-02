@@ -29,8 +29,6 @@ import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class Main {
 	
-	private static Map<Object, Color> COLORS = new HashMap<Object, Color>();
-
 	public static void main(String[] args) {
 		
 		// Création d'un graph non orienté.
@@ -61,19 +59,20 @@ public class Main {
 		ajouterArete(G, e, f);
 		ajouterArete(G, g, h);
 		
-		// On affiche le graph
-		displayGraph("Original", G, new Dimension(750, 550));
-		
 		// On affiche la matrice d'adjacence
 		System.out.println("Matrice d'adjacence :\n");
 		afficherMatriceAdjacence(calculerMatriceAdjacence(G));
 		
+		// Détection des anomalies
 		System.out.println("\nAnomalies :\n");
-		grapheIntervalle(G);
+		detecterAnomalies(G);
+		
+		// On affiche le graph
+		displayGraph("Original", G, new Dimension(750, 550));
 		
 	}
 	
-	private static void grapheIntervalle(UndirectedGraph<Suspect, Rencontre> g) {
+	private static void detecterAnomalies(UndirectedGraph<Suspect, Rencontre> g) {
 		List<Rencontre> rs = new ArrayList<Rencontre>();
 		// Pour chaque suspect
 		for (Suspect s1 : new ArrayList<Suspect>((Collection<Suspect>)g.getVertices())) {
@@ -90,10 +89,12 @@ public class Main {
 					// Ce voisin de voisin a déjà été rencontré !
 					if (ss.contains(s3)) {
 						Rencontre r = new Rencontre(s1, s3);
-						if (!rs.contains(r)) {
-							rs.add(r);
-							System.out.println(" - " + s1 + " et " + s3 + " ne se sont pas rencontreés, alors que " + s2 + " les a vu tt les deux");
-						}
+						// On ne fait plus ce test : cela augmente la suspicion
+						//if (rs.contains(r)) continue;
+						rs.add(r);
+						System.out.println(" - " + s1 + " et " + s3 + " ne se sont pas rencontreés, alors que " + s2 + " les a vu tt les deux");
+						s1.addSuspicion();
+						s3.addSuspicion();
 					}
 					ss.add(s3);
 				}
@@ -143,14 +144,20 @@ public class Main {
 	}
 	
 	public static void displayGraph(final String title, final Graph g, final Dimension dim) {
+		
+		// On calcule la valeur max de suspicion
+		int i = 0;
+		for (Suspect s : (Collection<Suspect>)g.getVertices()) i = Math.max(i, s.getSuspicionLevel());
+		final double max = i;
+		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				// Placement automatique
 				Layout l = new ISOMLayout(g);
 				// Placement manuel
 				l = new StaticLayout(g, new Transformer<Suspect, Point2D>() {
-					public Point2D transform(Suspect arg0) {
-						return arg0.getLocation();
+					public Point2D transform(Suspect s) {
+						return s.getLocation();
 					}
 				});
 				JFrame jf = new JFrame();
@@ -158,10 +165,9 @@ public class Main {
 				// Afficher les sommets avec des couleurs
 				vv.getRenderContext().setVertexFillPaintTransformer(new Transformer() {
 					public Paint transform(Object p) {
-						if (COLORS.containsKey(p)) {
-							return COLORS.get(p);
-						}
-						return Color.RED;
+						// Gradiant de vert à rouge
+						double ratio = ((Suspect)p).getSuspicionLevel() / max;
+						return new Color((int)(255d * ratio), (int)(255 * (1d - ratio)), 0);
 					}
 				});
 				// Afficher les arrêtes droites
@@ -176,8 +182,4 @@ public class Main {
 		});
 	}
 	
-	public static void setNodeColor(Object node, Color color) {
-		COLORS.put(node, color);
-	}
-
 }
