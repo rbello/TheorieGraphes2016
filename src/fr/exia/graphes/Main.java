@@ -3,28 +3,17 @@ package fr.exia.graphes;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Paint;
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
-
 import org.apache.commons.collections15.Transformer;
 
-import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
-import edu.uci.ics.jung.algorithms.layout.Layout;
-import edu.uci.ics.jung.algorithms.layout.StaticLayout;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.UndirectedGraph;
 import edu.uci.ics.jung.graph.UndirectedSparseGraph;
 import edu.uci.ics.jung.graph.util.EdgeType;
-import edu.uci.ics.jung.visualization.VisualizationViewer;
-import edu.uci.ics.jung.visualization.decorators.EdgeShape;
-import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 
-@SuppressWarnings({ "rawtypes", "unchecked" })
 public class Main {
 	
 	public static void main(String[] args) {
@@ -59,17 +48,34 @@ public class Main {
 		
 		// On affiche la matrice d'adjacence
 		System.out.println("Matrice d'adjacence :\n");
-		afficherMatriceAdjacence(calculerMatriceAdjacence(G));
+		GraphUtils.afficherMatriceAdjacence(GraphUtils.calculerMatriceAdjacence(G));
 		
 		// Détection des anomalies
 		System.out.println("\nAnomalies :\n");
 		detecterAnomalies(G);
 		
 		// On affiche le graph
-		displayGraph("Original", G, new Dimension(680, 550));
+		displayColoredGraph("Original", G, new Dimension(680, 550));
 		
 	}
 	
+	public static void displayColoredGraph(String title, UndirectedGraph<Suspect, Rencontre> graph, Dimension dimension) {
+		// On calcule la valeur max de suspicion
+		int i = 0;
+		for (Suspect s : (Collection<Suspect>)graph.getVertices()) i = Math.max(i, s.getSuspicionLevel());
+		final double max = i;
+		// Afficher les sommets avec des couleurs
+		Transformer<Suspect, Paint> ts = new Transformer<Suspect, Paint>() {
+			public Paint transform(Suspect p) {
+				// Gradiant de vert à rouge
+				double ratio = ((Suspect)p).getSuspicionLevel() / max;
+				return new Color((int)(255d * ratio), (int)(255 * (1d - ratio)), 0);
+			}
+		};
+		// On appelle la librairie pour afficher le graph
+		GraphUtils.displayGraph(title, graph, dimension, false, ts);
+	}
+
 	private static void detecterAnomalies(UndirectedGraph<Suspect, Rencontre> g) {
 		List<Rencontre> rs = new ArrayList<Rencontre>();
 		// Pour chaque suspect
@@ -101,85 +107,8 @@ public class Main {
 		}
 	}
 
-	protected static UndirectedGraph<Suspect, Rencontre> clone(UndirectedGraph<Suspect, Rencontre> g) {
-		UndirectedGraph<Suspect, Rencontre> G = new UndirectedSparseGraph<Suspect, Rencontre>();
-		for (Suspect s : (Collection<Suspect>)g.getVertices()) G.addVertex(s);
-		for (Rencontre r : (Collection<Rencontre>)g.getEdges()) G.addEdge(r, r.getLeft(), r.getRight(), EdgeType.UNDIRECTED);
-		return G;
-	}
-
-	private static void afficherMatriceAdjacence(int[][] m) {
-		System.out.print("   ");
-		for (int i = 0; i < m.length; ++i)
-			System.out.print((char)(65 + i) + " ");
-		System.out.println();
-		for (int i = 0; i < m.length; ++i) {
-			System.out.print((char)(65 + i));
-			System.out.print("|");
-			for (int j = 0; j < m.length; ++j) {
-				System.out.print(" " + m[i][j]);
-			}
-			System.out.println(" |");
-		}
-	}
-
 	private static void ajouterArete(Graph<Suspect, Rencontre> G, Suspect a, Suspect b) {
 		G.addEdge(new Rencontre(a, b), a, b, EdgeType.UNDIRECTED);
 	}
 
-	public static int[][] calculerMatriceAdjacence(UndirectedGraph<?, ?> g) {
-		// Nombre de sommets
-		int length = g.getVertexCount();
-		// Matrice en sortie
-		int[][] m = new int[length][length];
-		// On recupère les arêtes
-		for (Rencontre e : (Collection<Rencontre>)g.getEdges()) {
-			int i = e.getLeft().getIndex();
-			int j = e.getRight().getIndex();
-			m[i][j] = 1;
-			m[j][i] = 1;
-		}
-		return m;
-	}
-	
-	public static void displayGraph(final String title, final Graph g, final Dimension dim) {
-		
-		// On calcule la valeur max de suspicion
-		int i = 0;
-		for (Suspect s : (Collection<Suspect>)g.getVertices()) i = Math.max(i, s.getSuspicionLevel());
-		final double max = i;
-		
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				// Placement automatique
-				Layout l = new ISOMLayout(g);
-				// Placement manuel
-				l = new StaticLayout(g, new Transformer<Suspect, Point2D>() {
-					public Point2D transform(Suspect s) {
-						return s.getLocation();
-					}
-				});
-				JFrame jf = new JFrame();
-				VisualizationViewer vv = new VisualizationViewer(l, dim);
-				// Afficher les sommets avec des couleurs
-				vv.getRenderContext().setVertexFillPaintTransformer(new Transformer() {
-					public Paint transform(Object p) {
-						// Gradiant de vert à rouge
-						double ratio = ((Suspect)p).getSuspicionLevel() / max;
-						return new Color((int)(255d * ratio), (int)(255 * (1d - ratio)), 0);
-					}
-				});
-				// Afficher les arrêtes droites
-				vv.getRenderContext().setEdgeShapeTransformer(new EdgeShape.Line<Integer,String>());
-				// Afficher les labels des sommets
-				vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
-				jf.getContentPane().add(vv);
-				jf.pack();
-				jf.setTitle(title);
-				jf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				jf.setVisible(true);
-			}
-		});
-	}
-	
 }

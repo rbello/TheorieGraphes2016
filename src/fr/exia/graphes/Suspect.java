@@ -1,8 +1,6 @@
 package fr.exia.graphes;
 
-import java.awt.geom.Point2D;
-
-public class Suspect {
+public class Suspect extends Sommet2d {
 	
 	private static int INDEX = 0;
 	
@@ -17,19 +15,14 @@ public class Suspect {
 	private String name;
 	
 	/**
-	 * Emplacement graphique dans la fenêtre.
-	 */
-	private Point2D loc;
-	
-	/**
 	 * Niveau de suspicion, croissant quand des incertitudes apparaissent.
 	 */
 	private int suspicion;
 	
 	public Suspect(String name, double x, double y) {
+		super(x, y);
 		this.index = INDEX++;
 		this.name = name;
-		this.loc = new Point2D.Double(x * 7, y * 7);
 	}
 	
 	public int getIndex() {
@@ -40,9 +33,7 @@ public class Suspect {
 		return this.name;
 	}
 	
-	public Point2D getLocation() {
-		return this.loc;
-	}
+
 	
 	public int getSuspicionLevel() {
 		return this.suspicion;
