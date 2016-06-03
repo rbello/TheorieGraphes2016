@@ -18,6 +18,8 @@ public class Main {
 	
 	public static void main(String[] args) {
 		
+		System.out.println("---- EXERCICE 1\n");
+		
 		// Création d'un graph non orienté.
 		UndirectedGraph<Suspect, Rencontre> G = new UndirectedSparseGraph<Suspect, Rencontre>();
 		
@@ -55,7 +57,19 @@ public class Main {
 		detecterAnomalies(G);
 		
 		// On affiche le graph
-		displayColoredGraph("Original", G, new Dimension(680, 550));
+		displayColoredGraph("Graphe", G, new Dimension(680, 550));
+		
+		// On détermine la coupable
+		Suspect max = null;
+		for (Suspect s : (Collection<Suspect>)G.getVertices()) {
+			if (max == null || max.getSuspicionLevel() < s.getSuspicionLevel()) max = s;
+		}
+		System.out.println(String.format("\n%s est probalement coupable, car elle cumule un niveau de suspicion de %d",
+				max, max.getSuspicionLevel()));
+		
+		//System.out.println("\n---- EXERCICE 2\n");
+		
+		
 		
 	}
 	
@@ -97,7 +111,7 @@ public class Main {
 						// d'augmenter la suspicion
 						//if (rs.contains(r)) continue;
 						rs.add(r);
-						System.out.println(" - " + s1 + " et " + s3 + " ne se sont pas rencontreés, alors que " + s2 + " les a vu tt les deux");
+						System.out.println(String.format(" - %s et %s ne se sont pas rencontreés, alors que %s les a vu tt les deux", s1, s3, s2));
 						s1.addSuspicion();
 						s3.addSuspicion();
 					}
