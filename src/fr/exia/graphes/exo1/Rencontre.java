@@ -1,4 +1,4 @@
-package fr.exia.graphes;
+package fr.exia.graphes.exo1;
 
 public class Rencontre {
 

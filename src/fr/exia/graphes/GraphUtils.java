@@ -18,11 +18,12 @@ import edu.uci.ics.jung.graph.UndirectedGraph;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
+import fr.exia.graphes.exo1.Rencontre;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class GraphUtils {
 
-	public static <T extends Sommet2d> void displayGraph(final String title, final Graph<T, ?> graph,
+	public static <T extends Vertex2d> void displayGraph(final String title, final Graph<T, ?> graph,
 			final Dimension dim, final boolean autoLocation, final Transformer<T, Paint> ts) {
 		
 		SwingUtilities.invokeLater(new Runnable() {
@@ -83,5 +84,37 @@ public class GraphUtils {
 			System.out.println(" |");
 		}
 	}
+	
+	public abstract static class Vertex2d {
+
+		private static int INDEX = 0;
+		private int index;
+		private String name;
+		private Point2D loc;
+		
+		public Vertex2d(String name, double x, double y) {
+			this.index = ++INDEX;
+			this.name = name;
+			this.loc = new Point2D.Double(x * 7, y * 7);
+		}
+
+		public Point2D getLocation() {
+			return this.loc;
+		}
+		
+		public int getIndex() {
+			return this.index;
+		}
+		
+		public String getName() {
+			return this.name;
+		}
+
+		@Override
+		public String toString() {
+			return this.getName();
+		}
+	}
+
 	
 }
