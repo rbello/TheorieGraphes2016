@@ -8,7 +8,9 @@ public class Main {
 	public static void main(String[] args) {
 		
 		System.out.println("---- EXERCICE 1\n");
-		//Exo1.execute();
+		Exo1.execute();
+		
+		GraphUtils.resetVerticesIndex(1);
 		
 		System.out.println("\n---- EXERCICE 2\n");
 		Exo2.execute();

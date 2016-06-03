@@ -18,4 +18,9 @@ public class Tache extends Vertex2d {
 		return duration;
 	}
 	
+	@Override
+	public String toString() {
+		return getName() + " (" + duration + ")";
+	}
+	
 }

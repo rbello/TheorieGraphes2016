@@ -93,7 +93,7 @@ public class GraphUtils {
 		private Point2D loc;
 		
 		public Vertex2d(String name, double x, double y) {
-			this.index = ++INDEX;
+			this.index = INDEX++;
 			this.name = name;
 			this.loc = new Point2D.Double(x * 7, y * 7);
 		}
@@ -116,5 +116,8 @@ public class GraphUtils {
 		}
 	}
 
+	public static void resetVerticesIndex(int index) {
+		Vertex2d.INDEX = index;
+	}
 	
 }
