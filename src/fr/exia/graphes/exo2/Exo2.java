@@ -20,7 +20,7 @@ public class Exo2 {
 	public static void execute() {
 		
 		// Création d'un graph orienté.
-		DirectedGraph<Tache, Lien> G = new DirectedSparseGraph<Tache, Lien>();
+		final DirectedGraph<Tache, LienFinADebut> G = new DirectedSparseGraph<Tache, LienFinADebut>();
 		
 		// On fabrique les sommets
 		Tache s1 = new Tache("Gros œuvre", 15, 10, 25); G.addVertex(s1);
@@ -58,32 +58,30 @@ public class Exo2 {
 		int sum = 0;
 		for (Tache s : (Collection<Tache>)G.getVertices()) {
 			sum += s.getDuration();
-		}
+		}	
 		System.out.println("Durée totale : " + sum + " jours de travaux\n");
 		
-		// On recherche le chemin le plus court (sans prendre en compte les durées)
-		DijkstraShortestPath<Tache, Lien> p = new DijkstraShortestPath<Tache, Lien>(G, false);
-		List<Lien> ls = p.getPath(s1, s12);
-		System.out.println("Chemin le plus court en distance : " + ls.size() + " étapes (sans poids)");
-		for (Lien l : ls) System.out.println("\t- " + l);
-		
 		// Ce transformer permet de récupérer la distance d'une arête
-		Transformer<Lien, Double> wt = new Transformer<Lien, Double>() {
-            public Double transform(Lien link) {
+		Transformer<LienFinADebut, Double> wt = new Transformer<LienFinADebut, Double>() {
+            public Double transform(LienFinADebut link) {
                 return link.getDuration();
             }
         };
-        p = new DijkstraShortestPath<Tache, Lien>(G, wt, false);
-        ls = p.getPath(s1, s12);
-		System.out.println("\nChemin le plus court : " + ls.size() + " étapes (avec poids)");
+        
+        // On fabrique un calculateur Dijkstra
+        DijkstraShortestPath<Tache, LienFinADebut> p = new DijkstraShortestPath<Tache, LienFinADebut>(G, wt, false);
+        
+        // On détermine le chemin au plus court
+        List<LienFinADebut> ls = p.getPath(s1, s12);
+		System.out.println("Chemin le plus court : " + ls.size() + " étapes (avec poids)");
 		int w = 0;
-		for (Lien l : ls) {
+		for (LienFinADebut l : ls) {
 			System.out.println("\t- " + l);
 			w += l.getDuration();
 		}
 		System.out.println("Soit un temps minimal de " + w + " jours");
 		
-		// Pour le reste du calcule on va avoir besoin de la liste ordonnée des sommets
+		// Pour le reste du calcul on va avoir besoin de la liste ordonnée des sommets
 		List<Tache> lt = new ArrayList<Tache>((Collection<Tache>)G.getVertices());
 		Collections.sort(lt, new Comparator<Tache>() {
 	        public int compare(Tache t1, Tache t2) {
@@ -91,19 +89,51 @@ public class Exo2 {
 	        }
 	    });
 		
+		forwardPassCalculation(G, s1);
+		
 		// On détermine les dates au plus tôt
-		System.out.println("\nPoint\tDateAuPlusTot");
+		System.out.println("\nTache\tDebut+Tot\tFin+Tot\tDebut+Tard\tFin+Tard");
 		for (Tache s : lt) {
-			Number v = p.getDistance(s1, s);
-			System.out.println(String.format(" %d\t%.2f", s.getIndex(), v));
+			System.out.println(String.format(" %d\t%.2f\t\t%.2f\t%.2f\t\t%.2f", s.getIndex(), s.getEarlyStart(),
+					s.getEarlyFinish(), s.getLateStart(), s.getLateFinish()));
 		}
 		
-		// On affiche le graphe
-		GraphUtils.displayGraph("Exo 2", G, new Dimension(1000, 400), false, null);
+		System.out.println("Les travaux durant au plus " + s12.getLateFinish() + " jours, ces derniers seront terminés\npour l’arrivée de bébé (à condition que ce dernier ne pointe\npas son nez prématurément)");
+		
+		// On fabrique l'arbre couvrant minimum
+//		Graph<Tache, Lien> g = new PrimMinimumSpanningTree<Tache, Lien>(new Factory<Graph<Tache, Lien>>() {
+//			public Graph<Tache, Lien> create() {
+//				return new DirectedSparseGraph<Tache, Lien>();
+//			}
+//		}).transform(G);
+//		GraphUtils.displayGraph("Exo 2 - Arbre couvrant de poids minimal", g, new Dimension(1000, 400), false, null);
+		
+		// On affiche les graphes
+		GraphUtils.displayGraph("Exo 2 - Graphe", G, new Dimension(1000, 400), false, null);
+		
 	}
 
-	private static void ajouterArete(DirectedGraph<Tache, Lien> G, Tache s1, Tache s2, int duration) {
-		G.addEdge(new Lien(s1, s2, duration), s1, s2, EdgeType.DIRECTED);
+	public static void forwardPassCalculation(DirectedGraph<Tache, LienFinADebut> g, Tache t) {
+		forwardPassCalculation(g, t, 0);
+		backwardPassCalculation(g, t, 0);
+	}
+	
+	private static void backwardPassCalculation(DirectedGraph<Tache, LienFinADebut> g, Tache t, int i) {
+		t.setFloats(t.getLateFinish() - t.getEarlyFinish() - t.getDuration());
+	}
+
+	private static void forwardPassCalculation(DirectedGraph<Tache, LienFinADebut> g, Tache t, double start) {
+		double end = start + t.getDuration();
+		List<Tache> vs = new ArrayList<Tache>(g.getSuccessors(t));
+		//System.out.println(String.format("Je suis sur %s, debut %.2f fin %.2f. Il y a %d successeurs", t, start, end, vs.size()));
+		t.setDates(start, end);
+		for (Tache v : vs) {
+			forwardPassCalculation(g, v, end);
+		}
+	}
+
+	private static void ajouterArete(DirectedGraph<Tache, LienFinADebut> G, Tache s1, Tache s2, int duration) {
+		G.addEdge(new LienFinADebut(s1, s2, duration), s1, s2, EdgeType.DIRECTED);
 	}
 
 }
