@@ -1,5 +1,6 @@
 package fr.exia.graphes;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Paint;
 import java.awt.geom.Point2D;
@@ -23,9 +24,9 @@ import fr.exia.graphes.exo1.Rencontre;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class GraphUtils {
 
-	public static <T extends Vertex2d> void displayGraph(final String title, final Graph<T, ?> graph,
-			final Dimension dim, final boolean autoLocation, final Transformer<T, Paint> ts) {
-		
+	public static <T extends Vertex2d> Placeholder<JFrame> displayGraph(final String title, final Graph<T, ?> graph,
+			final Dimension dim, final boolean autoLocation, final Transformer<T, Paint> ts, final boolean labelEdges) {
+		final Placeholder<JFrame> r = new Placeholder<JFrame>();
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				// Placement automatique des points
@@ -46,13 +47,17 @@ public class GraphUtils {
 				vv.getRenderContext().setEdgeShapeTransformer(new EdgeShape.Line<Integer,String>());
 				// Afficher les labels des sommets
 				vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
+				// Afficher les labels des arêtes
+				if (labelEdges) vv.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller());
 				jf.getContentPane().add(vv);
 				jf.pack();
 				jf.setTitle(title);
 				jf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				jf.setVisible(true);
+				r.setObject(jf);
 			}
 		});
+		return r;
 	}
 	
 	public static int[][] calculerMatriceAdjacence(UndirectedGraph<?, ?> g) {
@@ -91,6 +96,7 @@ public class GraphUtils {
 		private int index;
 		private String name;
 		private Point2D loc;
+		public Paint color;
 		
 		public Vertex2d(String name, double x, double y) {
 			this.index = INDEX++;
@@ -118,6 +124,13 @@ public class GraphUtils {
 
 	public static void resetVerticesIndex(int index) {
 		Vertex2d.INDEX = index;
+	}
+	
+	public static class ColorTransformer<T extends Vertex2d> implements Transformer<T, Paint> {
+		public Paint transform(T p) {
+			if (p.color != null) return p.color;
+			return Color.LIGHT_GRAY;
+		}
 	}
 	
 }
