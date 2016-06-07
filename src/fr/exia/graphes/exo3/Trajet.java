@@ -1,5 +1,6 @@
 package fr.exia.graphes.exo3;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,6 +68,11 @@ public class Trajet {
 		}
 		sb.append(" (" + distance + ")");
 		return sb.toString();
+	}
+
+	public void setColor(Color color) {
+		for (Ville v : path)
+			v.color = color;
 	}
 
 }

@@ -24,6 +24,7 @@ public class Dijkstra {
 				// Si on a trouvé un chemin
 				if (t.hasReachedTarget()) {
 					to.color = Color.BLACK;
+					t.setColor(Color.RED);
 					Player.pause();
 					return t;
 				}
@@ -32,7 +33,7 @@ public class Dijkstra {
 					min = t;
 				}
 			}
-			// On explore ce chemin
+			// On explore ce trajet
 			dijkstra(g, trajets, min, to);
 		}
 	}
