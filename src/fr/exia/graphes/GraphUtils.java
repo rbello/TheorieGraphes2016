@@ -21,9 +21,23 @@ import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import fr.exia.graphes.exo1.Rencontre;
 
+/**
+ * Fonctions utilitaires pour les graphes.
+ */
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class GraphUtils {
 
+	/**
+	 * Afficher un graph.
+	 * 
+	 * @param title Titre de la fenêtre.
+	 * @param graph Graphe à afficher.
+	 * @param dim
+	 * @param autoLocation
+	 * @param ts
+	 * @param labelEdges
+	 * @return
+	 */
 	public static <T extends Vertex2d> Placeholder<JFrame> displayGraph(final String title, final Graph<T, ?> graph,
 			final Dimension dim, final boolean autoLocation, final Transformer<T, Paint> ts, final boolean labelEdges) {
 		final Placeholder<JFrame> r = new Placeholder<JFrame>();

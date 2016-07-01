@@ -71,7 +71,7 @@ public class Exo3 {
 		ajouterArete(G, s9, s11, 2);
 		ajouterArete(G, s10, s11, 4);
 		ajouterArete(G, s11, s12, 2);
-		
+
 		// Ce transformer permet de récupérer la distance d'une arête
 		Transformer<Chemin, Double> wt = new Transformer<Chemin, Double>() {
 			public Double transform(Chemin link) {
@@ -85,16 +85,17 @@ public class Exo3 {
 		// On détermine le chemin au plus court
 		List<Chemin> ls = p.getPath(s1, s12);
 		System.out.println("AVEC L'ALGO DE JUNG");
-		System.out.println("Chemin le plus court de " + s1 + " à " + s12 + " : " + (ls.size()+1) + " étapes");
+		System.out.println("Chemin le plus court de " + s1 + " à " + s12 + " : " + (ls.size() + 1) + " étapes");
 		int w = 0;
 		for (Chemin l : ls) {
 			System.out.println("\t- " + l.getFrom() + " -> " + l.getTo() + " (" + l + ")");
 			w += l.getDistance();
 		}
 		System.out.println(" Soit un total de distance: " + w);
-		
+
 		// On affiche les graphes
-		Placeholder<JFrame> f = GraphUtils.displayGraph("Exo 3 - Graphe", G, new Dimension(1000, 450), true, new ColorTransformer<Ville>(), true);
+		Placeholder<JFrame> f = GraphUtils.displayGraph("Exo 3 - Graphe", G, new Dimension(1000, 450), true,
+				new ColorTransformer<Ville>(), true);
 		f.join();
 		final JFrame x = f.getObject();
 		Player.frame = x;
@@ -110,9 +111,10 @@ public class Exo3 {
 							m.setText("Next");
 							new Thread(new Runnable() {
 								public void run() {
-									System.out.println("\nAVEC ALGO PAS A PAS");
 									Trajet chemin = Dijkstra.getShortestPath(G, s1, s12);
-									System.out.println("Chemin le plus court de " + s1 + " à " + s12 + " : " + chemin.length() + " étapes");
+									System.out.println("\nAVEC ALGO PAS A PAS");
+									System.out.println("Chemin le plus court de " + s1 + " à " + s12 + " : "
+											+ chemin.length() + " étapes");
 									System.out.println(chemin);
 									System.out.println(" Soit un total de distance: " + chemin.getDistance());
 									for (Ville v : G.getVertices()) {
@@ -127,8 +129,7 @@ public class Exo3 {
 									});
 								}
 							}).start();
-						}
-						else {
+						} else {
 							Player.next();
 						}
 					}

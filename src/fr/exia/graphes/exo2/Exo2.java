@@ -91,7 +91,7 @@ public class Exo2 {
 			System.out.println("\t- " + l);
 			w += l.getDuration();
 		}
-		System.out.println(String.format("Soit un temps minimal de %d jours, ce qui représente %.2f%% du travail", w, (double)(w / sum)));
+		System.out.println(String.format("Soit un temps minimal de %d jours, mais ce qui représente %.2f%% du travail.", w, (double)w / sum * 100d));
 		System.out.println("Conclusion : le chemin le plus court ne sert à rien dans cet exercice !");
 
 		// Pour le reste du calcul on va avoir besoin de la liste ordonnée des
@@ -104,7 +104,8 @@ public class Exo2 {
 		});
 
 		// On réalise les calculs sur le graph
-		compute(G, s1);
+		System.out.println("\nOn calcule les interdépendances (dates de fin/début plus tôt/tard et marges)...");
+		computeTasksInterdependencies(G, s1);
 
 		// On détermine les dates au plus tôt
 		System.out.println("\nTache\tDebut+Tot\tFin+Tot\tDebut+Tard\tFin+Tard");
@@ -131,13 +132,28 @@ public class Exo2 {
 
 	}
 
-	public static void compute(DirectedGraph<Tache, LienFinADebut> g, Tache t) {
+	/**
+	 * Effectuer les calculs d'interdépendances entre les tâches d'un graphe représentant un
+	 * réseau PERT. Ce calcul permet déterminer les dates de début et de fin au plus tôt et
+	 * au plus tard, ainsi que les marges dégagées.
+	 * 
+	 * @param g Le graphe complet.
+	 * @param t La tâche en cours à calculer.
+	 */
+	public static void computeTasksInterdependencies(DirectedGraph<Tache, LienFinADebut> g, Tache t) {
 		// Calcul des durées
 		forwardPassCalculation(g, t, 0);
 		// Calcul des marges
 		backwardPassCalculation(g, t, 0);
 	}
 	
+	/**
+	 * Calcul des durées.
+	 * 
+	 * @param g Le graphe complet.
+	 * @param t La tâche en cours à calculer.
+	 * @param start La date actuelle, c-à-d. la fin de la tâche précédente.
+	 */
 	private static void forwardPassCalculation(DirectedGraph<Tache, LienFinADebut> g, Tache t, double start) {
 		double end = start + t.getDuration();
 		List<Tache> vs = new ArrayList<Tache>(g.getSuccessors(t));
@@ -149,12 +165,27 @@ public class Exo2 {
 		}
 	}
 
-	private static void backwardPassCalculation(DirectedGraph<Tache, LienFinADebut> g, Tache t, int i) {
+	/**
+	 * Calcul des marges.
+	 * 
+	 * @param g Le graphe complet.
+	 * @param t La tâche en cours à calculer.
+	 * @param start La date actuelle, c-à-d. la fin de la tâche précédente.
+	 */
+	private static void backwardPassCalculation(DirectedGraph<Tache, LienFinADebut> g, Tache t, int start) {
 		t.setFloats(t.getLateFinish() - t.getEarlyFinish() - t.getDuration());
 	}
 
-	private static void ajouterArete(DirectedGraph<Tache, LienFinADebut> G, Tache s1, Tache s2, int duration) {
-		G.addEdge(new LienFinADebut(s1, s2, duration), s1, s2, EdgeType.DIRECTED);
+	/**
+	 * Fonction utilitaire pour ajouter une arête dans le graphe.
+	 * 
+	 * @param g Le graphe complet.
+	 * @param s1 La tâche N.
+	 * @param s2 La tâche N+1.
+	 * @param duration La durée des travaux entre les deux tâches.
+	 */
+	private static void ajouterArete(DirectedGraph<Tache, LienFinADebut> g, Tache s1, Tache s2, int duration) {
+		g.addEdge(new LienFinADebut(s1, s2, duration), s1, s2, EdgeType.DIRECTED);
 	}
 
 }

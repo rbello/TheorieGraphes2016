@@ -1,4 +1,8 @@
-# Who killed the Duke of Densmore?
+# Théorie des Graphes
+
+Ce projet présente 3 cas solutionnés par la théorie des graphes. Le premier cas est directement issu d’une histoire vraie…
+
+### Who killed the Duke of Densmore?
 
 Durant un été des années 70, le duc de Densmore ainsi que son majordome sont retrouvés morts dans la propriété du duc sur l’île de Watt. Une charge explosive a été branchée sur l’un des disjoncteurs présent dans le labyrinthe. La conception d’une telle bombe demande de très nombreux préparatifs et le coupable a nécessairement dû passer du temps sur l’île caché dans les labyrinthes pour la mettre au point. En plus du duc et de son majordome, huit femmes sont venues passer du temps sur l’île. Les analyses laissent à penser que le coupable a agi seul. Les pêcheurs ont témoigné que chaque suspecte n’est venue qu’une seule fois et qu’aucune autre personne n’a été vue à l’embarquement. Mais qui a tué le duc de Densmore ?
 Les faits remontant à plus d’un an au moment de l’enquête, aucune d’entre elles ne se souvient exactement des dates de leur venue. Elles se rappellent cependant les personnes rencontrées sur place. 
@@ -23,8 +27,12 @@ Et conclue alors à la culpabilité du majordome et classe l’affaire.
 
 Quelques semaines plus tard, le détective Ratson rencontre son ami le professeur Torder Smith et ne tarde pas à lui détailler l’affaire. Très intéressé, Torder Smith sort un calepin et griffonne un graphe. Chaque sommet du graphe correspond à une des témoins (A pour Ann, B pour Betty, C pour Cynthia, …). Deux sommets sont reliés par des arêtes si les deux femmes se sont rencontrées sur l’île. Torder Smith scrute alors le graphe et annonce que le majordome est innocent, et qu’il connait l’identité de la coupable. Mais qui est-ce ? 
 
-## Solver Java
+#### Solver Java
 
 Ce projet Java vise à résoudre de manière programmatique ce problème. L'algo se base sur la solution commentée dans [cette vidéo](https://www.youtube.com/watch?v=ZGhSyVvOelg).
 
 ![Screenshot](https://raw.githubusercontent.com/rbello/TheorieGraphes2016/master/misc/Screenshot.png)
+
+### PERT + Dijkstra's shortest path
+
+Ce projet montre également comment utiliser les graphes pour déterminer **l’organisation des tâches en gestion de projet** (réseau *PERT*), ou encore comment déterminer **le chemin le plus court entre deux points** d’un graphe (comme le font les GPS de nos voitures) grâce à l’algorithme de _Djikstra_.
